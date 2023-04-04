@@ -78,7 +78,7 @@ export class NativeDialogHandler extends AbstractDialogHandler {
 
 		const detailString = (useAgo: boolean): string => {
 			return localize({ key: 'aboutDetail', comment: ['Electron, Chromium, Node.js and V8 are product names that need no translation'] },
-				"Version: {0}\nCommit: {1}\nDate: {2}\nElectron: {3}\nChromium: {4}\nNode.js: {5}\nV8: {6}\nOS: {7}\nSandboxed: {8}",
+				"版权所有: 国能智深控制技术有限公司\n\nVersion: {0}\nCommit: {1}\nDate: {2}\nElectron: {3}\nChromium: {4}\nNode.js: {5}\nV8: {6}\nOS: {7}",
 				version,
 				this.productService.commit || 'Unknown',
 				this.productService.date ? `${this.productService.date}${useAgo ? ' (' + fromNow(new Date(this.productService.date), true) + ')' : ''}` : 'Unknown',
@@ -86,8 +86,8 @@ export class NativeDialogHandler extends AbstractDialogHandler {
 				process.versions['chrome'],
 				process.versions['node'],
 				process.versions['v8'],
-				`${osProps.type} ${osProps.arch} ${osProps.release}${isLinuxSnap ? ' snap' : ''}`,
-				process.sandboxed ? 'Yes' : 'No' // TODO@bpasero remove me once sandbox is final
+				`${osProps.type} ${osProps.arch} ${osProps.release}${isLinuxSnap ? ' snap' : ''}`
+				// process.sandboxed ? 'Yes' : 'No' // TODO@bpasero remove me once sandbox is final
 			);
 		};
 
@@ -96,7 +96,9 @@ export class NativeDialogHandler extends AbstractDialogHandler {
 
 		const { response } = await this.nativeHostService.showMessageBox({
 			type: 'info',
-			message: this.productService.nameLong,
+			title: 'Code-Debugger',
+			// message: this.productService.nameLong,
+			message: 'Code-Debugger V1.0',
 			detail: `\n${detail}`,
 			buttons: [
 				localize({ key: 'copy', comment: ['&& denotes a mnemonic'] }, "&&Copy"),
