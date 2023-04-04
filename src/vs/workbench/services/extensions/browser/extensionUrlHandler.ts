@@ -138,76 +138,76 @@ class ExtensionUrlHandler implements IExtensionUrlHandler, IURLHandler {
 	}
 
 	async handleURL(uri: URI, options?: IOpenURLOptions): Promise<boolean> {
-		if (!isExtensionId(uri.authority)) {
-			return false;
-		}
+		// if (!isExtensionId(uri.authority)) {
+		// 	return false;
+		// }
 
-		const extensionId = uri.authority;
-		this.telemetryService.publicLog2<ExtensionUrlHandlerEvent, ExtensionUrlHandlerClassification>('uri_invoked/start', { extensionId });
+		// const extensionId = uri.authority;
+		// this.telemetryService.publicLog2<ExtensionUrlHandlerEvent, ExtensionUrlHandlerClassification>('uri_invoked/start', { extensionId });
 
-		const wasHandlerAvailable = this.extensionHandlers.has(ExtensionIdentifier.toKey(extensionId));
-		const extension = await this.extensionService.getExtension(extensionId);
+		// const wasHandlerAvailable = this.extensionHandlers.has(ExtensionIdentifier.toKey(extensionId));
+		// const extension = await this.extensionService.getExtension(extensionId);
 
-		if (!extension) {
-			await this.handleUnhandledURL(uri, { id: extensionId }, options);
-			return true;
-		}
+		// if (!extension) {
+		// 	await this.handleUnhandledURL(uri, { id: extensionId }, options);
+		// 	return true;
+		// }
 
-		const trusted = options?.trusted
-			|| (options?.originalUrl ? await this.extensionUrlTrustService.isExtensionUrlTrusted(extensionId, options.originalUrl) : false)
-			|| this.didUserTrustExtension(ExtensionIdentifier.toKey(extensionId));
+		// const trusted = options?.trusted
+		// 	|| (options?.originalUrl ? await this.extensionUrlTrustService.isExtensionUrlTrusted(extensionId, options.originalUrl) : false)
+		// 	|| this.didUserTrustExtension(ExtensionIdentifier.toKey(extensionId));
 
-		if (!trusted) {
-			let uriString = uri.toString(false);
+		// if (!trusted) {
+		// 	let uriString = uri.toString(false);
 
-			if (uriString.length > 40) {
-				uriString = `${uriString.substring(0, 30)}...${uriString.substring(uriString.length - 5)}`;
-			}
+		// 	if (uriString.length > 40) {
+		// 		uriString = `${uriString.substring(0, 30)}...${uriString.substring(uriString.length - 5)}`;
+		// 	}
 
-			const result = await this.dialogService.confirm({
-				message: localize('confirmUrl', "Allow an extension to open this URI?", extensionId),
-				checkbox: {
-					label: localize('rememberConfirmUrl', "Don't ask again for this extension."),
-				},
-				detail: `${extension.displayName || extension.name} (${extensionId}) wants to open a URI:\n\n${uriString}`,
-				primaryButton: localize({ key: 'open', comment: ['&& denotes a mnemonic'] }, "&&Open")
-			});
+		// 	const result = await this.dialogService.confirm({
+		// 		message: localize('confirmUrl', "Allow an extension to open this URI?", extensionId),
+		// 		checkbox: {
+		// 			label: localize('rememberConfirmUrl', "Don't ask again for this extension."),
+		// 		},
+		// 		detail: `${extension.displayName || extension.name} (${extensionId}) wants to open a URI:\n\n${uriString}`,
+		// 		primaryButton: localize({ key: 'open', comment: ['&& denotes a mnemonic'] }, "&&Open")
+		// 	});
 
-			if (!result.confirmed) {
-				this.telemetryService.publicLog2<ExtensionUrlHandlerEvent, ExtensionUrlHandlerClassification>('uri_invoked/cancel', { extensionId });
-				return true;
-			}
+		// 	if (!result.confirmed) {
+		// 		this.telemetryService.publicLog2<ExtensionUrlHandlerEvent, ExtensionUrlHandlerClassification>('uri_invoked/cancel', { extensionId });
+		// 		return true;
+		// 	}
 
-			if (result.checkboxChecked) {
-				this.userTrustedExtensionsStorage.add(ExtensionIdentifier.toKey(extensionId));
-			}
-		}
+		// 	if (result.checkboxChecked) {
+		// 		this.userTrustedExtensionsStorage.add(ExtensionIdentifier.toKey(extensionId));
+		// 	}
+		// }
 
-		const handler = this.extensionHandlers.get(ExtensionIdentifier.toKey(extensionId));
+		// const handler = this.extensionHandlers.get(ExtensionIdentifier.toKey(extensionId));
 
-		if (handler) {
-			if (!wasHandlerAvailable) {
-				// forward it directly
-				return await this.handleURLByExtension(extensionId, handler, uri, options);
-			}
+		// if (handler) {
+		// 	if (!wasHandlerAvailable) {
+		// 		// forward it directly
+		// 		return await this.handleURLByExtension(extensionId, handler, uri, options);
+		// 	}
 
-			// let the ExtensionUrlHandler instance handle this
-			return false;
-		}
+		// 	// let the ExtensionUrlHandler instance handle this
+		// 	return false;
+		// }
 
-		// collect URI for eventual extension activation
-		const timestamp = new Date().getTime();
-		let uris = this.uriBuffer.get(ExtensionIdentifier.toKey(extensionId));
+		// // collect URI for eventual extension activation
+		// const timestamp = new Date().getTime();
+		// let uris = this.uriBuffer.get(ExtensionIdentifier.toKey(extensionId));
 
-		if (!uris) {
-			uris = [];
-			this.uriBuffer.set(ExtensionIdentifier.toKey(extensionId), uris);
-		}
+		// if (!uris) {
+		// 	uris = [];
+		// 	this.uriBuffer.set(ExtensionIdentifier.toKey(extensionId), uris);
+		// }
 
-		uris.push({ timestamp, uri });
+		// uris.push({ timestamp, uri });
 
-		// activate the extension
-		await this.extensionService.activateByEvent(`onUri:${ExtensionIdentifier.toKey(extensionId)}`);
+		// // activate the extension
+		// await this.extensionService.activateByEvent(`onUri:${ExtensionIdentifier.toKey(extensionId)}`);
 		return true;
 	}
 
